@@ -76,8 +76,8 @@ Deploy the project as a Node.js web service that supports WebSockets. The server
 
 - Build command: `npm ci && npm run build`
 - Start command: `npm start`
-- Set `CLIENT_ORIGIN` to the exact public website address, for example `https://your-app.example.com`.
+- Set `CLIENT_ORIGIN` to the exact public website address: `https://watchparty-e0oo.onrender.com`.
 
 After deployment, test room creation and joining, video sync, approvals, moderator controls, and host disconnect from the public address.
 
-**Live app:** Not deployed yet. Add the public URL here before submitting.
+**Live app:** [https://watchparty-e0oo.onrender.com](https://watchparty-e0oo.onrender.com)
