@@ -1,54 +1,83 @@
 # YouTube Watch Party
 
-A small assignment project: React and YouTube on the frontend, Express and Socket.IO for shared rooms.
+A small web app for watching a YouTube video together. One person creates a room and shares its code. Everyone in that room sees the same video and playback position.
 
-## What it does
+## Features
 
-- Create a room or join with an invite link/code.
-- Sync video, play, pause, and seek between participants.
-- Let the host assign moderators or remove participants.
-- Require participant playback changes to be approved by a host/moderator.
+- Create a room or join one with its code.
+- Play, pause, seek, or change the video together.
+- Let the host assign moderators or remove people.
+- Let participants ask the host or a moderator to approve playback changes.
+- Make another participant the host automatically if the current host disconnects.
 
-## Where to look
+## Run it on your computer
 
-- src/main.jsx starts the React app.
-- src/App.jsx connects the screens and keeps the current room state.
-- src/components/JoinRoom.jsx creates or joins a room.
-- src/components/RoomView.jsx shows the room and playback controls.
-- src/components/VideoFrame.jsx embeds the YouTube player.
-- src/components/ControlRequests.jsx shows requests for host approval.
-- src/components/Participants.jsx shows the roster and host role controls.
-- src/socket.js sends events and reads server replies.
-- server.js handles room events and broadcasts updates.
-- server/helpers.js validates names and playback changes, and formats room data.
-- server/roomActions.js updates playback, removes users, and sends room updates.
+You need Node.js 20.19 or newer.
 
-## Follow one playback change
+1. Open PowerShell in the project folder and install the packages:
 
-1. A button in RoomView sends an event through src/socket.js.
-2. server.js checks the user's room and role.
-3. A host or moderator's change is broadcast immediately. A participant's change waits for approval.
-4. App.jsx receives the update and gives the new state to RoomView.
+   ```powershell
+   npm install
+   ```
 
-## Run locally
+2. Start the server in one PowerShell window:
 
-Use Node.js 20.19 or newer:
+   ```powershell
+   npm start
+   ```
 
-1. Run npm ci.
-2. Start the backend with npm start.
-3. In another terminal, run npm run dev.
-4. Open the Vite URL, create a room, then open its invite link in another browser window.
+3. Open a second PowerShell window in the same folder and start the website:
 
-Run npm test for the Socket.IO checks. Use npm run lint and npm run build for code/build checks.
+   ```powershell
+   npm run dev
+   ```
 
-## Deploy
+4. Open the Vite address shown in the second window. It is usually `http://localhost:5173`.
 
-Build with npm ci && npm run build and start with npm start. Set CLIENT_ORIGIN to your exact public HTTPS origin, such as https://your-app.onrender.com.
+To try the app with another person, open that address in another browser window. Create a room in one window, then join with its room code in the other.
 
-Live URL: not deployed yet. Add the public URL here before submitting.
+## Run the checks
 
-## Simple architecture
+```powershell
+npm test
+npm run lint
+npm run build
+```
 
-The browser sends an event such as play or seek. The server checks room membership and permissions, updates the room state, then sends sync_state to everyone in that room. Participant changes use request_control and only apply after a host or moderator approves them.
+## Where the code lives
 
-Rooms exist in server memory and disappear when everyone leaves or the server restarts. Names are display labels; the room code is the invitation.
+- `src/main.jsx` starts the React app.
+- `src/App.jsx` keeps track of the room, participants, and connection.
+- `src/components/JoinRoom.jsx` has the create-room and join-room form.
+- `src/components/RoomView.jsx` puts the video, controls, and participant list together.
+- `src/components/VideoFrame.jsx` shows the YouTube player.
+- `src/components/ControlRequests.jsx` shows requests waiting for host or moderator approval.
+- `src/components/Participants.jsx` shows who is in the room and their roles.
+- `src/socket.js` sends messages between the website and server.
+- `server.js` handles room events and checks permissions.
+- `server/helpers.js` checks names and playback values.
+- `server/roomActions.js` updates playback and participant lists, and handles people leaving.
+- `tests/server.test.js` checks the main server actions.
+
+## How a playback change works
+
+1. The website sends a message to the server, such as `play` or `seek`.
+2. The server checks that the person is in the room and has permission.
+3. A host or moderator's change is applied right away. A participant's change waits for approval.
+4. The server sends the new video state to everyone in the room.
+
+## Room data
+
+Rooms are kept in server memory. They end when everyone leaves or the server restarts. A name is only a display name; the room code is the invitation.
+
+## Deployment
+
+Deploy the project as a Node.js web service that supports WebSockets. The server serves the built website from `dist` and handles the Socket.IO connection.
+
+- Build command: `npm ci && npm run build`
+- Start command: `npm start`
+- Set `CLIENT_ORIGIN` to the exact public website address, for example `https://your-app.example.com`.
+
+After deployment, test room creation and joining, video sync, approvals, moderator controls, and host disconnect from the public address.
+
+**Live app:** Not deployed yet. Add the public URL here before submitting.
